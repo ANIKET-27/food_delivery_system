@@ -9,7 +9,7 @@ import java.util.List;
 
 public interface DriverRepository extends JpaRepository<Driver,Long> {
 
-    @Query("SELECT d  FORM Driver d WHERE d.available = true")
+    @Query("SELECT d FROM Driver d WHERE d.available = true" )
     List<Driver> findAllAvailableDriver();
 
 

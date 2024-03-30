@@ -21,7 +21,8 @@ public class User {
     private String userName;
     private String password;
     private String email;
-    private Location location;
+    private double latitude;
+    private double longitude;
     private String phoneNo;
 
     private HashMap<Dish,Double> cart = new HashMap<>();

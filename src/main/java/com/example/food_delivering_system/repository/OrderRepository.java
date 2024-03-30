@@ -15,16 +15,16 @@ public interface OrderRepository extends JpaRepository<Order,Long> {
     List<Order> findOngoingOrders();
 
 
-    @Query("SELECT o FROM Order o WHERE o.driver.id = :driverId AND ( o.status == 'Completed' OR o.status == 'Canceled')")
+    @Query("SELECT o FROM Order o WHERE o.driver.id = :driverId AND ( o.orderStatus = 'Completed' OR o.orderStatus <> 'Canceled')")
     List<Order> findCompleteOrdersForDriver(Long driverId);
 
-    @Query("SELECT o FROM Order o WHERE o.driver.id = :driverId AND  ( o.status != 'Completed' AND o.status != 'Canceled')")
+    @Query("SELECT o FROM Order o WHERE o.driver.id = :driverId AND  ( o.orderStatus = 'Completed' AND o.orderStatus <> 'Canceled')")
     List<Order> findOngoingOrdersForDriver(Long driverId);
 
-    @Query("SELECT o FROM Order o WHERE o.user.id = :userId AND ( o.status == 'Completed' OR o.status == 'Canceled')")
+    @Query("SELECT o FROM Order o WHERE o.user.id = :userId AND ( o.orderStatus = 'Completed' OR o.orderStatus <> 'Canceled')")
     List<Order> findCompletedOrdersByUserId(Long userId);
 
-    @Query("SELECT o FROM Order o WHERE o.user.id = :userId AND ( o.status != 'Completed' AND o.status != 'Canceled')")
+    @Query("SELECT o FROM Order o WHERE o.user.id = :userId AND ( o.orderStatus = 'Completed' AND o.orderStatus <> 'Canceled')")
     List<Order> findOngoingOrdersByUserId(Long userId);
 
 }

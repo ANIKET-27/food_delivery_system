@@ -20,8 +20,8 @@ public class Driver {
     public String username;
     public String password;
     private String email;
-
-    private Location location;
+    private double latitude;
+    private double longitude;
     private String phoneNo;
     private Boolean available;
 

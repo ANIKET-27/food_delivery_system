@@ -98,7 +98,8 @@ public class UserServicesImpl implements UserServices {
         order.setOrderItems(userDTO.getCart());
         order.calculateAmt();
         order.setOrderDate(LocalDateTime.now());
-        order.setDeliveryLocation(user.getLocation());
+        order.setLatitude(user.getLatitude());
+        order.setLongitude(user.getLatitude());
         order.setDeliveryInstructions(instruction);
 
         Order saveOrder = orderRepository.save(order);
@@ -118,7 +119,7 @@ public class UserServicesImpl implements UserServices {
 
          Order order = optionalOrder.get();
 
-         if(order.getStatus().equals("Canclled")) throw new RuntimeException("Order Has Already Being Cancelled");
+         if(order.getOrderStatus().equals("Canclled")) throw new RuntimeException("Order Has Already Being Cancelled");
 
          Order saved = orderRepository.save(Convetor.orderDtoToOrder(orderDTO));
 

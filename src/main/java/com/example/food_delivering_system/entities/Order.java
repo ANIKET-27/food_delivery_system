@@ -25,9 +25,10 @@ public class Order {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long orderId;
     private LocalDateTime orderDate;
-    private String status;
+    private String orderStatus;
     private double totalAmount;
-    private Location deliveryLocation;
+    private double latitude;
+    private double longitude;
     private String deliveryInstructions;
     private String paymentStatus;
 
@@ -45,7 +46,7 @@ public class Order {
             name = "order_item",
             joinColumns = @JoinColumn(name = "order_id")
     )
-    @MapKeyJoinColumn(name = "product_id")
+    @MapKeyJoinColumn(name = "dish_id")
     @Column(name = "quantity")
     private Map<Dish, Double> orderItems = new HashMap<>();
 

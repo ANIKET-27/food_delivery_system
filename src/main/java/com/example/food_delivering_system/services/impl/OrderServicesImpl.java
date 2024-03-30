@@ -74,7 +74,7 @@ public class OrderServicesImpl implements OrderServices {
 
         if(optionalOrder.isEmpty()) throw new RuntimeException("ORDER NOT FOUND BY ID");
 
-        optionalOrder.get().setStatus(status);
+        optionalOrder.get().setOrderStatus(status);
 
         Order orderSaved = orderRepository.save(optionalOrder.get());
 

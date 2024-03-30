@@ -43,9 +43,11 @@ public class DishServicesImpl implements DishServices {
     @Override
     public DishDTO createDish(DishDTO dishDTO) {
        Dish d = Convetor.dishDtoToDish(dishDTO);
-       d = dishRepository.save(d);
+       Dish saved = dishRepository.save(d);
 
-       return Convetor.dishToDishDto(d);
+        return DishDTO.builder()
+               .id(saved.getId())
+               .build();
 
     }
 

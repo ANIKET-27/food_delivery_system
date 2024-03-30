@@ -112,7 +112,7 @@ public class DriverServicesImpl implements DriverServices {
 
         if(order.isEmpty()) throw  new RuntimeException("Something went wrong with the assinging driver");
 
-        order.get().setStatus(str);
+        order.get().setOrderStatus(str);
 
         orderRepository.save(order.get());
 

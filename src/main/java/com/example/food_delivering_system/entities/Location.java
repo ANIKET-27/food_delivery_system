@@ -1,9 +1,11 @@
 package com.example.food_delivering_system.entities;
 
 
+import jakarta.persistence.Entity;
 import lombok.*;
 
 @Data
+
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
