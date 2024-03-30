@@ -11,9 +11,9 @@ public interface DishServices {
 
     DishDTO getDishById(Long id);
 
-    DishDTO createDish();
+    DishDTO createDish(DishDTO dishDTO);
 
-    DishDTO updateDish();
+    DishDTO updateDish(DishDTO dishDTO);
 
     void deleteDish(Long id);
 

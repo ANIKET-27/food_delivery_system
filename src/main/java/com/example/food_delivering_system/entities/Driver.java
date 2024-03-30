@@ -1,19 +1,18 @@
 package com.example.food_delivering_system.entities;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.util.ArrayList;
 import java.util.List;
 
+@Data
 @Entity
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
 @Setter
+@Builder
 public class Driver {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -24,7 +23,7 @@ public class Driver {
 
     private Location location;
     private String phoneNo;
-    private String status;
+    private Boolean available;
 
     @OneToMany(mappedBy = "driver")
     private List<Order> orders = new ArrayList<>();

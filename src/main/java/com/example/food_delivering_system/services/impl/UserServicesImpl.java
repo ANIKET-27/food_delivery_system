@@ -6,12 +6,11 @@ import com.example.food_delivering_system.entities.Order;
 import com.example.food_delivering_system.entities.User;
 import com.example.food_delivering_system.repository.OrderRepository;
 import com.example.food_delivering_system.repository.UserRepository;
-import com.example.food_delivering_system.services.OrderServices;
 import com.example.food_delivering_system.services.UserServices;
-import org.aspectj.weaver.ast.Or;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -20,12 +19,12 @@ import java.util.Optional;
 public class UserServicesImpl implements UserServices {
 
     private final UserRepository userRepository;
-    private final OrderServicesImpl orderServicesImpl;
+    private final OrderRepository orderRepository;
 
     @Autowired
-    public UserServicesImpl(UserRepository userRepository, OrderServicesImpl orderServicesImpl){
+    public UserServicesImpl(UserRepository userRepository, OrderRepository orderRepository){
         this.userRepository = userRepository;
-        this.orderServicesImpl = orderServicesImpl;
+        this.orderRepository = orderRepository;
 
     }
 
@@ -35,19 +34,38 @@ public class UserServicesImpl implements UserServices {
     }
 
     @Override
-    public List<OrderDTO> getAllOrders(Long id) {
+    public List<OrderDTO> getAllOngoingOrders(Long id) {
         List<OrderDTO> list = new ArrayList<>();
-        List<Order> orders = userRepository.findOrdersByUserId(id);
+        List<Order> orders = orderRepository.findOngoingOrdersByUserId(id);
 
-        for(Order order : orders) list.add(Convetor.orderToOrderDto(order));
+        if(orders == null) throw new RuntimeException("ORDERS ARE NOT FETCHED PROPERLY");
+
+        for (Order order : orders) list.add(Convetor.orderToOrderDto(order));
+
+        return list;
+    }
+
+    @Override
+    public List<OrderDTO> getAllCompletedOrders(Long id) {
+        List<OrderDTO> list = new ArrayList<>();
+        List<Order> orders = orderRepository.findCompletedOrdersByUserId(id);
+
+        if(orders == null) throw new RuntimeException("ORDERS ARE NOT FETCHED PROPERLY");
+
+        for (Order order : orders) list.add(Convetor.orderToOrderDto(order));
 
         return list;
     }
 
     @Override
     public UserDTO getUserById(Long id) {
+
         Optional<User> optUser = userRepository.findById(id);
-        return Convetor.userToUserDto(optUser.get());
+
+        if(optUser.isEmpty()) throw new RuntimeException("USER NOT FOUND");
+
+        return  Convetor.userToUserDto(optUser.get());
+
     }
 
     @Override
@@ -60,26 +78,59 @@ public class UserServicesImpl implements UserServices {
     @Override
     public UserDTO updateUser(UserDTO userDTO) {
         User user = Convetor.userDtoToUser(userDTO);
-
+        userRepository.save(user);
         return userDTO;
     }
 
     @Override
-    public UserDTO placeOrder(UserDTO userDTO) {
+    public UserDTO createOrder(UserDTO userDTO,String instruction) {
 
-        updateUser(userDTO);
-        return  orderServicesImpl.createOrder(userDTO);
+        if(userDTO.getCart().isEmpty()) throw new RuntimeException("CART IS EMPTY");
+
+        Optional<User> optionalUser = userRepository.findById(userDTO.getId());
+
+        if(optionalUser.isEmpty()) throw  new RuntimeException("User Not Logged In");
+
+        User user = optionalUser.get();
+
+        Order order = new Order();
+        order.setUser(user);
+        order.setOrderItems(userDTO.getCart());
+        order.calculateAmt();
+        order.setOrderDate(LocalDateTime.now());
+        order.setDeliveryLocation(user.getLocation());
+        order.setDeliveryInstructions(instruction);
+
+        Order saveOrder = orderRepository.save(order);
+
+        user.getOrder().add(saveOrder);
+
+        User saveUser = userRepository.save(user);
+
+        return Convetor.userToUserDto(saveUser);
 
     }
 
     @Override
-    public OrderDTO cancelOrder(OrderDTO orderDTO) {
-        return orderServicesImpl.updateOrder(orderDTO);
+    public OrderDTO updateOrder(OrderDTO orderDTO) {
+         Optional<Order> optionalOrder = orderRepository.findById(orderDTO.getOrderId());
+         if(optionalOrder.isEmpty()) throw  new RuntimeException("Order Do Not Exist");
+
+         Order order = optionalOrder.get();
+
+         if(order.getStatus().equals("Canclled")) throw new RuntimeException("Order Has Already Being Cancelled");
+
+         Order saved = orderRepository.save(Convetor.orderDtoToOrder(orderDTO));
+
+         return Convetor.orderToOrderDto(saved);
+
     }
+
+
+
 
     @Override
     public void deleteUser(Long id) {
-
         Optional<User> optionalUser = userRepository.findById(id);
         if (optionalUser.isPresent()) {
             userRepository.deleteById(id);
@@ -87,10 +138,6 @@ public class UserServicesImpl implements UserServices {
             throw new RuntimeException("User not found with ID: " + id);
         }
     }
-
-
-
-
 
 
 }

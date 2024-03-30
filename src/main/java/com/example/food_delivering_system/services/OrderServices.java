@@ -15,9 +15,9 @@ public interface OrderServices {
 
   OrderDTO getOrderBYId(Long id);
 
-  UserDTO createOrder(UserDTO userDTO);
 
-  OrderDTO updateOrder(OrderDTO  orderDTO);
+  void updateStatusToAccepted(Long orderId,String status);
+
 
 
 }

@@ -1,8 +1,10 @@
 package com.example.food_delivering_system.services.impl;
 
+import com.example.food_delivering_system.DTO.DishDTO;
 import com.example.food_delivering_system.DTO.DriverDTO;
 import com.example.food_delivering_system.DTO.OrderDTO;
 import com.example.food_delivering_system.DTO.UserDTO;
+import com.example.food_delivering_system.entities.Dish;
 import com.example.food_delivering_system.entities.Driver;
 import com.example.food_delivering_system.entities.Order;
 import com.example.food_delivering_system.entities.User;
@@ -34,6 +36,9 @@ public class Convetor {
     static DriverDTO driverToDriverDto(Driver driver){
        return new DriverDTO();
     }
+
+    static Dish dishDtoToDish(DishDTO dishDTO) {return new Dish(); }
+    static DishDTO dishToDishDto (Dish dish) {return new DishDTO(); }
 
 
 }

@@ -16,6 +16,14 @@ public interface DriverServices {
 
     DriverDTO updateDriver(DriverDTO driverDTO);
 
-    DriverDTO acceptOrder(DriverDTO driverDTO, OrderDTO orderDTO);
+    List<OrderDTO> getPastOrder(Long id);
+
+    List<OrderDTO> getCurrentOrder(Long id);
+
+    void assignDriverToOrder (Long orderId, Long driverId);
+
+    void updateStatusForDelivery(Long orderId, String str);
+
+
 
 }

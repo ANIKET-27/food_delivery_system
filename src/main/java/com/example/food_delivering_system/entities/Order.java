@@ -1,10 +1,7 @@
 package com.example.food_delivering_system.entities;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import org.hibernate.annotations.Fetch;
 
 import java.time.LocalDateTime;
@@ -16,10 +13,12 @@ import static jakarta.persistence.FetchType.*;
 
 
 @Entity
+@Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
 @Setter
+@Builder
 public class Order {
 
     @Id
@@ -49,6 +48,17 @@ public class Order {
     @MapKeyJoinColumn(name = "product_id")
     @Column(name = "quantity")
     private Map<Dish, Double> orderItems = new HashMap<>();
+
+    public void calculateAmt(){
+        double total=0;
+
+        for(Map.Entry<Dish,Double> e : orderItems.entrySet()){
+            total += e.getValue() * e.getKey().getPrice();
+        }
+
+        setTotalAmount(total);
+
+    }
 
 
 }

@@ -10,7 +10,8 @@ public interface UserServices{
 
     List<UserDTO> getAllUsers();
 
-    List<OrderDTO> getAllOrders(Long id);
+    List<OrderDTO> getAllCompletedOrders(Long id);
+    List<OrderDTO> getAllOngoingOrders(Long id);
 
     UserDTO getUserById(Long id);
 
@@ -18,10 +19,11 @@ public interface UserServices{
 
     UserDTO updateUser(UserDTO userDTO);
 
-    UserDTO placeOrder(UserDTO userDTO);
+    UserDTO createOrder(UserDTO userDTO, String instruction);
 
-    OrderDTO cancelOrder(OrderDTO orderDTO);
+    OrderDTO updateOrder(OrderDTO  orderDTO);
 
     void deleteUser(Long id);
+
 
 }

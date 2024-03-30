@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 public class OrderServicesImpl implements OrderServices {
 
@@ -57,38 +58,30 @@ public class OrderServicesImpl implements OrderServices {
 
     @Override
     public OrderDTO getOrderBYId(Long id) {
-        return Convetor.orderToOrderDto(orderRepository.findById(id).get());
+
+        Optional<Order> optionalOrder = orderRepository.findById(id);
+
+        if(optionalOrder.isEmpty()) throw new RuntimeException("ORDER NOT FOUND BY ID");
+
+        return Convetor.orderToOrderDto(optionalOrder.get());
+
     }
 
     @Override
-    public UserDTO createOrder(UserDTO userDTO) {
+    public void updateStatusToAccepted(Long orderId ,String status) {
 
-        // Create order using the userDTO
-        Order order = new Order();
+        Optional<Order> optionalOrder = orderRepository.findById(orderId);
+
+        if(optionalOrder.isEmpty()) throw new RuntimeException("ORDER NOT FOUND BY ID");
+
+        optionalOrder.get().setStatus(status);
+
+        Order orderSaved = orderRepository.save(optionalOrder.get());
+
+         Convetor.orderToOrderDto(orderSaved);
 
 
-
-        return userDTO;
     }
-
-    @Override
-    public OrderDTO updateOrder(OrderDTO orderDTO) {
-
-        Order order = Convetor.orderDtoToOrder(orderDTO);
-
-        return orderDTO;
-    }
-
-//    public Order setDriverForOrder(Long orderId, Long driverId) {
-//        Order order = orderRepository.findById(orderId)
-//                .orElseThrow(() -> new RuntimeException("Order not found with ID: " + orderId));
-//
-//        Driver driver = driverRepository.findById(driverId)
-//                .orElseThrow(() -> new RuntimeException("Driver not found with ID: " + driverId));
-//
-//        order.setDriver(driver);
-//        return orderRepository.save(order);
-//    }
 
 
 }
