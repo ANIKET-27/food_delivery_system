@@ -14,6 +14,8 @@ public interface DriverServices {
 
     DriverDTO createDriver(DriverDTO driverDTO);
 
+    DriverDTO getDriverById(Long id);
+
     DriverDTO updateDriver(DriverDTO driverDTO);
 
     List<OrderDTO> getPastOrder(Long id);

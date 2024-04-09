@@ -14,14 +14,14 @@ import lombok.*;
 @Setter
 @Entity
 @Builder
+@ToString
 public class Dish {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+    private long dish_id;
     private String name;
     private String description;
     private double price;
-
 
 }

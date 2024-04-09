@@ -16,7 +16,7 @@ public interface OrderServices {
   OrderDTO getOrderBYId(Long id);
 
 
-  void updateStatusToAccepted(Long orderId,String status);
+  void updateOrderStatus(Long orderId,String status);
 
 
 

@@ -8,37 +8,62 @@ import com.example.food_delivering_system.entities.Dish;
 import com.example.food_delivering_system.entities.Driver;
 import com.example.food_delivering_system.entities.Order;
 import com.example.food_delivering_system.entities.User;
+import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import java.text.BreakIterator;
 
 
 public class Convetor {
 
-   static User userDtoToUser(UserDTO userDTO){
-        return new User();
 
+    static ModelMapper modelMapper = new ModelMapper();
+
+    public static User userDtoToUser(UserDTO userDTO) { return modelMapper.map(userDTO,User.class);}
+
+    public static  UserDTO userToUserDto(User user){
+  return modelMapper.map(user, UserDTO.class);
+
+//        return  UserDTO.builder()
+//                .user_id(user.getUser_id())
+//                .userName(user.getUserName())
+//                .password(user.getPassword())
+//                .email(user.getEmail())
+//                .latitude(user.getLatitude())
+//                .longitude(user.getLongitude())
+//                .phoneNo(user.getPhoneNo())
+//                .cart(user.getCart())
+//                .order(user.getOrder())
+//                .build();
     }
 
-    static  UserDTO userToUserDto(User user){
-        return new UserDTO();
+  public   static Order orderDtoToOrder(OrderDTO orderDTO){
+       return modelMapper.map(orderDTO,Order.class);
     }
 
-    static Order orderDtoToOrder(OrderDTO orderDTO){
-       return new Order();
+   public static OrderDTO orderToOrderDto(Order order){
+       return modelMapper.map(order, OrderDTO.class);
     }
 
-    static OrderDTO orderToOrderDto(Order order){
-       return new OrderDTO();
+    public static Driver driverDtotoDriver(DriverDTO driverDTO){
+       return modelMapper.map(driverDTO, Driver.class);
     }
 
-    static Driver driverDtotoDriver(DriverDTO driverDTO){
-       return new Driver();
+   public    static DriverDTO driverToDriverDto(Driver driver){
+       return  modelMapper.map(driver, DriverDTO.class);
     }
 
-    static DriverDTO driverToDriverDto(Driver driver){
-       return new DriverDTO();
-    }
+    public static Dish dishDtoToDish(DishDTO dishDTO) {
 
-    static Dish dishDtoToDish(DishDTO dishDTO) {return new Dish(); }
-    static DishDTO dishToDishDto (Dish dish) {return new DishDTO(); }
+       return  modelMapper.map(dishDTO,Dish.class);
+
+    }
+    public static DishDTO dishToDishDto (Dish dish) {
+
+      return  modelMapper.map(dish,DishDTO.class);
+
+
+    }
 
 
 }

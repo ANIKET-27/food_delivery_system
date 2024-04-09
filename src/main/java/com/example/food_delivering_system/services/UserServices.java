@@ -1,6 +1,7 @@
 package com.example.food_delivering_system.services;
 
 import com.example.food_delivering_system.DTO.OrderDTO;
+import com.example.food_delivering_system.DTO.PlaceOrderDTO;
 import com.example.food_delivering_system.DTO.UserDTO;
 
 
@@ -19,7 +20,7 @@ public interface UserServices{
 
     UserDTO updateUser(UserDTO userDTO);
 
-    UserDTO createOrder(UserDTO userDTO, String instruction);
+    UserDTO createOrder(PlaceOrderDTO placeOrderDTO);
 
     OrderDTO updateOrder(OrderDTO  orderDTO);
 

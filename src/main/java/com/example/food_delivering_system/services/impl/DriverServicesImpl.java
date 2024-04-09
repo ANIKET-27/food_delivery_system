@@ -7,12 +7,15 @@ import com.example.food_delivering_system.entities.Order;
 import com.example.food_delivering_system.repository.DriverRepository;
 import com.example.food_delivering_system.repository.OrderRepository;
 import com.example.food_delivering_system.services.DriverServices;
+import jakarta.persistence.Converter;
 import org.hibernate.query.sqm.tree.expression.Conversion;
+import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+@Service
 public class DriverServicesImpl implements DriverServices {
 
     private final DriverRepository driverRepository;
@@ -65,27 +68,50 @@ public class DriverServicesImpl implements DriverServices {
     }
 
     @Override
+    public DriverDTO getDriverById(Long id) {
+        Optional<Driver> driverOpt = driverRepository.findById(id);
+
+        if(driverOpt.isEmpty()) throw new RuntimeException("Cannot Find The Driver");
+
+        return Convetor.driverToDriverDto(driverOpt.get());
+    }
+
+    @Override
     public List<OrderDTO> getPastOrder(Long id){
-        List<Order> pastOrder = orderRepository.findCompleteOrdersForDriver(id);
+        DriverDTO driverDTO = getDriverById(id);
 
-        List<OrderDTO> orders = new ArrayList<>();
 
-        for(Order o : pastOrder) orders.add(Convetor.orderToOrderDto(o));
+        List<Order> orders = driverDTO.getOrders();
 
-        return orders;
+        List<OrderDTO> orderDto = new ArrayList<>();
+
+        for(Order o : orders)
+            if(o.getOrderStatus().equals("Completed")) {
+                orderDto.add(Convetor.orderToOrderDto(o));
+            }
+
+        return orderDto;
 
 
     }
 
     @Override
     public List<OrderDTO> getCurrentOrder(Long id) {
-        List<Order> pastOrder = orderRepository.findOngoingOrdersForDriver(id);
+        DriverDTO driverDTO = getDriverById(id);
 
-        List<OrderDTO> orders = new ArrayList<>();
 
-        for(Order o : pastOrder) orders.add(Convetor.orderToOrderDto(o));
+        List<Order> orders = driverDTO.getOrders();
 
-        return orders;
+        List<OrderDTO> orderDto = new ArrayList<>();
+
+        // Also add the different stages that could be in the orders
+
+        for(Order o : orders)
+            if(!o.getOrderStatus().equals("Completed")) {
+                orderDto.add(Convetor.orderToOrderDto(o));
+            }
+
+        return orderDto;
 
     }
 
@@ -97,11 +123,24 @@ public class DriverServicesImpl implements DriverServices {
 
         if(driver.isEmpty() || order.isEmpty()) throw  new RuntimeException("Something went wrong with the assinging driver");
 
-        driver.get().getOrders().add(order.get());
-        order.get().setDriver(driver.get());
+        if(driver.get().getAvailable()) {
 
-        orderRepository.save(order.get());
-        driverRepository.save(driver.get());
+
+            order.get().setDriver(driver.get());
+            driver.get().getOrders().add(order.get());
+
+
+            // Make the function to change the availability of the driver
+
+
+            orderRepository.save(order.get());
+            driverRepository.save(driver.get());
+
+
+        }
+        else
+            throw  new RuntimeException("DRIVER IS NO AVAILABLE");
+
 
     }
 
@@ -114,7 +153,14 @@ public class DriverServicesImpl implements DriverServices {
 
         order.get().setOrderStatus(str);
 
+        if(str.equals("Completed")){
+
+            // Set Driver Availabel
+
+        }
+
         orderRepository.save(order.get());
+
 
 
     }

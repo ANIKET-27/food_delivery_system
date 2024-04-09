@@ -7,11 +7,13 @@ import com.example.food_delivering_system.entities.User;
 import com.example.food_delivering_system.repository.OrderRepository;
 import com.example.food_delivering_system.services.OrderServices;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+@Service
 public class OrderServicesImpl implements OrderServices {
 
     public final OrderRepository orderRepository;
@@ -68,7 +70,7 @@ public class OrderServicesImpl implements OrderServices {
     }
 
     @Override
-    public void updateStatusToAccepted(Long orderId ,String status) {
+    public void updateOrderStatus(Long orderId ,String status) {
 
         Optional<Order> optionalOrder = orderRepository.findById(orderId);
 

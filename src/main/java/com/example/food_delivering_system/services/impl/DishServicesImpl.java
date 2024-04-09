@@ -5,19 +5,24 @@ import com.example.food_delivering_system.entities.Dish;
 import com.example.food_delivering_system.repository.DishRepository;
 import com.example.food_delivering_system.services.DishServices;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+@Service
 public class DishServicesImpl implements DishServices {
 
     private final DishRepository dishRepository;
+
 
     @Autowired
     public DishServicesImpl(DishRepository dishRepository){
         this.dishRepository = dishRepository;
     }
+
+
     @Override
     public List<DishDTO> getAllDishes() {
         List<DishDTO> dishDTOList = new ArrayList<>();
@@ -41,13 +46,17 @@ public class DishServicesImpl implements DishServices {
     }
 
     @Override
-    public DishDTO createDish(DishDTO dishDTO) {
-       Dish d = Convetor.dishDtoToDish(dishDTO);
+    public DishDTO createDish(String name , String description, Double price) {
+       Dish d = Dish.builder()
+               .name(name)
+               .description(description)
+               .price(price)
+               .build();
+
+
        Dish saved = dishRepository.save(d);
 
-        return DishDTO.builder()
-               .id(saved.getId())
-               .build();
+        return  Convetor.dishToDishDto(saved);
 
     }
 

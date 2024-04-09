@@ -1,6 +1,7 @@
 package com.example.food_delivering_system.services.impl;
 
 import com.example.food_delivering_system.DTO.OrderDTO;
+import com.example.food_delivering_system.DTO.PlaceOrderDTO;
 import com.example.food_delivering_system.DTO.UserDTO;
 import com.example.food_delivering_system.entities.Order;
 import com.example.food_delivering_system.entities.User;
@@ -30,13 +31,20 @@ public class UserServicesImpl implements UserServices {
 
     @Override
     public List<UserDTO> getAllUsers() {
-        return null;
+        List<UserDTO> list = new ArrayList<>();
+        for(User u : userRepository.findAll()) list.add(Convetor.userToUserDto(u));
+
+        return list;
+
     }
 
     @Override
     public List<OrderDTO> getAllOngoingOrders(Long id) {
         List<OrderDTO> list = new ArrayList<>();
-        List<Order> orders = orderRepository.findOngoingOrdersByUserId(id);
+
+        User user = Convetor.userDtoToUser(getUserById(id));
+
+        List<Order> orders = orderRepository.findOngoingOrdersByUser(user);
 
         if(orders == null) throw new RuntimeException("ORDERS ARE NOT FETCHED PROPERLY");
 
@@ -48,7 +56,10 @@ public class UserServicesImpl implements UserServices {
     @Override
     public List<OrderDTO> getAllCompletedOrders(Long id) {
         List<OrderDTO> list = new ArrayList<>();
-        List<Order> orders = orderRepository.findCompletedOrdersByUserId(id);
+
+        User user = Convetor.userDtoToUser(getUserById(id));
+
+        List<Order> orders = orderRepository.findCompletedOrdersByUser(user);
 
         if(orders == null) throw new RuntimeException("ORDERS ARE NOT FETCHED PROPERLY");
 
@@ -64,15 +75,18 @@ public class UserServicesImpl implements UserServices {
 
         if(optUser.isEmpty()) throw new RuntimeException("USER NOT FOUND");
 
-        return  Convetor.userToUserDto(optUser.get());
+        User user = optUser.get();
+
+        return  Convetor.userToUserDto(user);
 
     }
 
     @Override
     public UserDTO createUser(UserDTO userDTO) {
         User user = Convetor.userDtoToUser(userDTO);
-        userRepository.save(user);
-        return userDTO;
+
+        User save =  userRepository.save(user);
+        return Convetor.userToUserDto(save);
     }
 
     @Override
@@ -83,32 +97,25 @@ public class UserServicesImpl implements UserServices {
     }
 
     @Override
-    public UserDTO createOrder(UserDTO userDTO,String instruction) {
+    public UserDTO createOrder(PlaceOrderDTO placeOrderDTO) {
+        UserDTO user = getUserById(placeOrderDTO.getUser_id());
 
-        if(userDTO.getCart().isEmpty()) throw new RuntimeException("CART IS EMPTY");
+        Order newOrder = Order.builder()
+                .orderDate(LocalDateTime.now())
+                .user(Convetor.userDtoToUser(user))
+                .orderStatus("Ongoing")
+                .deliveryInstructions(placeOrderDTO.getDeliveryInstructions())
+                .paymentStatus("Cash On Delivery")
+                .orderItems(placeOrderDTO.getCart())
+                .build();
 
-        Optional<User> optionalUser = userRepository.findById(userDTO.getId());
+        newOrder.calculateAmt();
 
-        if(optionalUser.isEmpty()) throw  new RuntimeException("User Not Logged In");
+        Order save = orderRepository.save(newOrder);
 
-        User user = optionalUser.get();
+        user.getOrder().add(save);
 
-        Order order = new Order();
-        order.setUser(user);
-        order.setOrderItems(userDTO.getCart());
-        order.calculateAmt();
-        order.setOrderDate(LocalDateTime.now());
-        order.setLatitude(user.getLatitude());
-        order.setLongitude(user.getLatitude());
-        order.setDeliveryInstructions(instruction);
-
-        Order saveOrder = orderRepository.save(order);
-
-        user.getOrder().add(saveOrder);
-
-        User saveUser = userRepository.save(user);
-
-        return Convetor.userToUserDto(saveUser);
+        return updateUser(user);
 
     }
 
@@ -119,9 +126,11 @@ public class UserServicesImpl implements UserServices {
 
          Order order = optionalOrder.get();
 
-         if(order.getOrderStatus().equals("Canclled")) throw new RuntimeException("Order Has Already Being Cancelled");
+         //if(order.getOrderStatus() == null || order.getOrderStatus().equals("Canclled")) throw new RuntimeException("Order Has Already Being Cancelled");
 
-         Order saved = orderRepository.save(Convetor.orderDtoToOrder(orderDTO));
+         order.setOrderStatus("Canceled");
+
+         Order saved = orderRepository.save(order);
 
          return Convetor.orderToOrderDto(saved);
 

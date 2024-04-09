@@ -7,17 +7,17 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-@Data
 @Entity
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
+
+@Table(name = "User_Table")
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+    private long user_id;
     private String userName;
     private String password;
     private String email;
@@ -25,9 +25,9 @@ public class User {
     private double longitude;
     private String phoneNo;
 
-    private HashMap<Dish,Double> cart = new HashMap<>();
+    private HashMap<Dish,Double> cart;
 
-    @OneToMany(mappedBy = "user")
-    private List<Order> order = new ArrayList<>();
+    @OneToMany(mappedBy = "user" ,fetch = FetchType.EAGER)
+    private List<Order> order;
 
 }

@@ -16,15 +16,18 @@ import java.util.Map;
 @NoArgsConstructor
 @Getter
 @Setter
+@Data
 @Builder
 public class OrderDTO {
     private Long orderId;
     private LocalDateTime orderDate;
-    private String status;
+    private String orderStatus;
     private double totalAmount;
-    private Location deliveryLocation;
+    private double latitude;
+    private double longitude;
     private String deliveryInstructions;
     private String paymentStatus;
+
 
 
     private Driver driver;
@@ -33,6 +36,8 @@ public class OrderDTO {
     private User user;
 
 
-    private Map<Dish, Double> orderItems = new HashMap<>();
+    private Map<Dish, Double> orderItems;
+
+
 
 }

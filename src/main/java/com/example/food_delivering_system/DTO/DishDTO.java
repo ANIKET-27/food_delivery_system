@@ -8,9 +8,14 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@ToString
 public class DishDTO {
     private long id;
     private String name;
     private String description;
     private double price;
+
+
+
+
 }

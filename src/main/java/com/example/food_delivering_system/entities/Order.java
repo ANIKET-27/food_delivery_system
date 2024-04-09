@@ -13,12 +13,12 @@ import static jakarta.persistence.FetchType.*;
 
 
 @Entity
-@Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
 @Setter
 @Builder
+@Table(name ="Order_Table")
 public class Order {
 
     @Id
@@ -33,22 +33,23 @@ public class Order {
     private String paymentStatus;
 
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "driver_id")
     private Driver driver;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "user_id")
     private User user;
 
-    @ElementCollection
+    @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(
             name = "order_item",
             joinColumns = @JoinColumn(name = "order_id")
+
     )
     @MapKeyJoinColumn(name = "dish_id")
     @Column(name = "quantity")
-    private Map<Dish, Double> orderItems = new HashMap<>();
+    private Map<Dish, Double> orderItems;
 
     public void calculateAmt(){
         double total=0;
