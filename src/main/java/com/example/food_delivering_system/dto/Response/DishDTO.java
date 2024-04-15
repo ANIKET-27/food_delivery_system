@@ -1,4 +1,4 @@
-package com.example.food_delivering_system.DTO;
+package com.example.food_delivering_system.dto.Response;
 
 
 import lombok.*;
@@ -10,12 +10,10 @@ import lombok.*;
 @Builder
 @ToString
 public class DishDTO {
-    private long id;
+
+    private Long dish_id;
     private String name;
     private String description;
-    private double price;
-
-
-
+    private Double price;
 
 }

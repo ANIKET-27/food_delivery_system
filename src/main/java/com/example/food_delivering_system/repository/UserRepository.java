@@ -10,6 +10,16 @@ import java.util.List;
 
 public interface UserRepository extends JpaRepository<User,Long> {
 
+    @Query("SELECT d FROM User d WHERE d.available = true" )
+    List<User> findAllAvailableDriver();
 
+    @Query("SELECT d FROM User d WHERE d.available = false" )
+    List<User> findAllUnavailableDriver();
+
+    @Query("SELECT u FROM User u WHERE u.role.id = 2")
+    List<User> findAllCustomers();
+
+    @Query("SELECT u FROM User u WHERE  u.role.id = 3")
+    List<User> findAllDrivers();
 
 }

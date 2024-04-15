@@ -1,6 +1,5 @@
-package com.example.food_delivering_system.DTO;
+package com.example.food_delivering_system.dto.Request;
 
-import com.example.food_delivering_system.entities.Dish;
 import lombok.*;
 
 import java.util.HashMap;
@@ -12,8 +11,9 @@ import java.util.HashMap;
 @Builder
 public class PlaceOrderDTO {
 
-    private HashMap<Dish,Double> cart;
+
+    private HashMap<Long,Double> cart;
     private String deliveryInstructions;
-    private long user_id;
+    private Long user_id;
 
 }

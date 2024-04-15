@@ -1,22 +1,20 @@
 package com.example.food_delivering_system.services;
 
-import com.example.food_delivering_system.DTO.DriverDTO;
-import com.example.food_delivering_system.DTO.OrderDTO;
+import com.example.food_delivering_system.dto.Request.CreateUserDTO;
+import com.example.food_delivering_system.dto.Response.OrderDTO;
+import com.example.food_delivering_system.dto.Response.UserDTO;
 
 import java.util.List;
 
 
 public interface DriverServices {
 
-    List<DriverDTO> getAllDrivers();
 
-    List<DriverDTO>  getAllAvailableDrivers();
+    UserDTO createDriver(CreateUserDTO dto);
 
-    DriverDTO createDriver(DriverDTO driverDTO);
+    UserDTO getDriverById(Long id);
 
-    DriverDTO getDriverById(Long id);
-
-    DriverDTO updateDriver(DriverDTO driverDTO);
+    UserDTO updateDriver(Long id, CreateUserDTO driverDTO);
 
     List<OrderDTO> getPastOrder(Long id);
 
@@ -24,8 +22,8 @@ public interface DriverServices {
 
     void assignDriverToOrder (Long orderId, Long driverId);
 
-    void updateStatusForDelivery(Long orderId, String str);
+    void updateStatusForDelivery(Long orderId, Integer status);
 
-
+    void deleteDriver(Long id);
 
 }

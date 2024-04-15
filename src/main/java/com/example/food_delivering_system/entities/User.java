@@ -1,33 +1,35 @@
 package com.example.food_delivering_system.entities;
 
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 @Entity
 @Getter
 @Setter
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
-
 @Table(name = "User_Table")
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long user_id;
+    private long userId;
     private String userName;
     private String password;
     private String email;
-    private double latitude;
-    private double longitude;
+    private Double latitude;
+    private Double longitude;
     private String phoneNo;
+    private Boolean available;
+    private Long accNo;
 
-    private HashMap<Dish,Double> cart;
-
-    @OneToMany(mappedBy = "user" ,fetch = FetchType.EAGER)
-    private List<Order> order;
+    @ManyToOne
+    @JoinColumn(name = "role_id")
+    private Role role;
 
 }

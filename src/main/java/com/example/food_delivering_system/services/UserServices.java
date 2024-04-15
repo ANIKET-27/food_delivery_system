@@ -1,28 +1,29 @@
 package com.example.food_delivering_system.services;
 
-import com.example.food_delivering_system.DTO.OrderDTO;
-import com.example.food_delivering_system.DTO.PlaceOrderDTO;
-import com.example.food_delivering_system.DTO.UserDTO;
+import com.example.food_delivering_system.dto.Request.CreateUserDTO;
+import com.example.food_delivering_system.dto.Response.OrderDTO;
+import com.example.food_delivering_system.dto.Request.PlaceOrderDTO;
+import com.example.food_delivering_system.dto.Response.UserDTO;
 
 
 import java.util.List;
 
+
 public interface UserServices{
 
-    List<UserDTO> getAllUsers();
-
     List<OrderDTO> getAllCompletedOrders(Long id);
+
     List<OrderDTO> getAllOngoingOrders(Long id);
 
     UserDTO getUserById(Long id);
 
-    UserDTO createUser(UserDTO userDTO);
+    UserDTO createUser(CreateUserDTO dto);
 
-    UserDTO updateUser(UserDTO userDTO);
+    UserDTO updateUser(Long userId , CreateUserDTO userDTO);
 
-    UserDTO createOrder(PlaceOrderDTO placeOrderDTO);
+    OrderDTO createOrder(PlaceOrderDTO placeOrderDTO);
 
-    OrderDTO updateOrder(OrderDTO  orderDTO);
+    OrderDTO cancelOrder(Long orderId);
 
     void deleteUser(Long id);
 

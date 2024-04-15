@@ -9,26 +9,22 @@ import java.util.List;
 
 public interface OrderRepository extends JpaRepository<Order,Long> {
 
-    @Query("SELECT o FROM Order o WHERE o.orderStatus = 'completed'")
+    @Query("SELECT o FROM Order o WHERE o.orderStatus = 3 OR o.orderStatus= -1")
     List<Order> findCompletedOrders();
 
-    @Query("SELECT o FROM Order o WHERE o.orderStatus = 'ongoing'")
+    @Query("SELECT o FROM Order o WHERE o.orderStatus <> 3")
     List<Order> findOngoingOrders();
 
-
-    @Query("SELECT o FROM Order o WHERE o.driver.id = :driverId AND ( o.orderStatus = 'Completed' OR o.orderStatus <> 'Canceled')")
-    List<Order> findCompleteOrdersForDriver(Long driverId);
-
-    @Query("SELECT o FROM Order o WHERE o.driver.id = :driverId AND  ( o.orderStatus = 'Completed' AND o.orderStatus <> 'Canceled')")
-    List<Order> findOngoingOrdersForDriver(Long driverId);
-
-    @Query("SELECT o FROM Order o WHERE o.user = :user AND ( o.orderStatus = 'Completed' OR o.orderStatus = 'Canceled')")
+    @Query("SELECT o FROM Order o WHERE o.user = :user AND  (o.orderStatus = 3 OR o.orderStatus = -1)")
     List<Order> findCompletedOrdersByUser(User user);
 
-    @Query("SELECT o FROM Order o WHERE o.user = :user AND (o.orderStatus <> 'Completed' AND o.orderStatus <> 'Canceled')")
+    @Query("SELECT o FROM Order o WHERE o.user = :user AND (o.orderStatus = 1 OR  o.orderStatus = 2)")
     List<Order> findOngoingOrdersByUser(User user);
 
+    @Query("SELECT o FROM Order o WHERE o.driver = :driver AND  (o.orderStatus = 3 OR o.orderStatus = -1)")
+    List<Order> findCompletedOrdersByDriver(User driver);
 
-
+    @Query("SELECT o FROM Order o WHERE o.driver = :driver AND (o.orderStatus = 1 OR  o.orderStatus = 2)")
+    List<Order> findOngoingOrdersByDriver(User driver);
 
 }
