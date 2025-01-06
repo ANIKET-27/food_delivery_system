@@ -4,6 +4,8 @@ package com.example.food_delivering_system;
 import com.example.food_delivering_system.dto.Request.CreateUserDTO;
 import com.example.food_delivering_system.dto.Response.OrderDTO;
 import com.example.food_delivering_system.dto.Request.PlaceOrderDTO;
+import com.example.food_delivering_system.entities.User;
+import com.example.food_delivering_system.repository.UserRepository;
 import com.example.food_delivering_system.services.impl.DriverServicesImpl;
 import com.example.food_delivering_system.services.impl.UserServicesImpl;
 import org.junit.jupiter.api.Test;
@@ -21,14 +23,23 @@ public class UserServiceIUnitTest {
     @Autowired
     private DriverServicesImpl driverServices;
 
+    @Autowired
+    private UserRepository userRepository;
+
+    @Test
+    void findUserByUserName(){
+        User user = userRepository.findByUserName("john_doe");
+        System.out.println(user.getEmail());
+    }
+
     @Test
     void createUser(){
 
         userServices.createUser(
                 CreateUserDTO.builder()
-                        .userName("User3")
+                        .userName("Admin1")
                         .password("password")
-                        .email("user3@ex.com")
+                        .email("admin@ex.com")
                         .phoneNo("239439")
                         .latitude(234.4)
                         .longitude(23.5)

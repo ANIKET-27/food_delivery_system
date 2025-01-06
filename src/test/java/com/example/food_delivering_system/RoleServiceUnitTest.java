@@ -16,9 +16,9 @@ public class RoleServiceUnitTest {
 
     @Test
     void createRote(){
-        roleRepository.save(Role.builder().role_id(1).role_name("Admine").build());
-        roleRepository.save( Role.builder().role_id(2).role_name("User").build());
-        roleRepository.save(Role.builder().role_id(3).role_name("Driver").build());
+        roleRepository.save(Role.builder().roleId(1).roleName("Admine").build());
+        roleRepository.save( Role.builder().roleId(2).roleName("User").build());
+        roleRepository.save(Role.builder().roleId(3).roleName("Driver").build());
     }
 
 }
