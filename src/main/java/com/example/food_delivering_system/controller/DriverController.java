@@ -3,30 +3,34 @@ package com.example.food_delivering_system.controller;
 import com.example.food_delivering_system.dto.Request.CreateUserDTO;
 import com.example.food_delivering_system.dto.Response.OrderDTO;
 import com.example.food_delivering_system.dto.Response.UserDTO;
+import com.example.food_delivering_system.entities.DriverLocation;
 import com.example.food_delivering_system.services.DriverServices;
+import com.example.food_delivering_system.services.impl.UserServicesImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+@Controller
 @RestController
 @RequestMapping("/api/driver")
 public class DriverController {
 
     private final DriverServices driverServices;
+    private final UserServicesImpl userServices;
+    private  UserDTO userDTO;
 
     @Autowired
-    public DriverController(DriverServices driverServices) {
+    public DriverController(UserServicesImpl userServices, DriverServices driverServices) {
         this.driverServices = driverServices;
+        this.userServices = userServices;
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<UserDTO> getDriverById(@PathVariable Long id) {
-        UserDTO driver = driverServices.getDriverById(id);
-        return ResponseEntity.ok(driver);
-    }
 
     @PostMapping
     public ResponseEntity<UserDTO> createDriver(@RequestBody CreateUserDTO dto) {
@@ -34,40 +38,62 @@ public class DriverController {
         return new ResponseEntity<>(driver, HttpStatus.CREATED);
     }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<UserDTO> updateDriver(@PathVariable Long id, @RequestBody CreateUserDTO userDTO) {
-        UserDTO updatedDriver = driverServices.updateDriver(id,userDTO);
+    @PutMapping("/updateDriver")
+    public ResponseEntity<UserDTO> updateDriver(@RequestBody CreateUserDTO createUserDTO) {
+        setUserDto();
+        UserDTO updatedDriver = driverServices.updateDriver(userDTO.getUserId(), createUserDTO);
         return ResponseEntity.ok(updatedDriver);
     }
 
-    @GetMapping("/{id}/orders/past")
-    public ResponseEntity<List<OrderDTO>> getPastOrders(@PathVariable Long id) {
-        List<OrderDTO> pastOrders = driverServices.getPastOrder(id);
+    @GetMapping("/completed-orders")
+    public ResponseEntity<List<OrderDTO>> getPastOrders() {
+        setUserDto();
+        List<OrderDTO> pastOrders = driverServices.getPastOrder(userDTO.getUserId());
         return ResponseEntity.ok(pastOrders);
     }
 
-    @GetMapping("/{id}/orders/current")
-    public ResponseEntity<List<OrderDTO>> getCurrentOrders(@PathVariable Long id) {
-        List<OrderDTO> currentOrders = driverServices.getCurrentOrder(id);
+    @GetMapping("/availableOrder")
+    public ResponseEntity<List<OrderDTO>> getAvailable() {
+        List<OrderDTO> orders = driverServices.getAvailableOrder();
+        return ResponseEntity.ok(orders);
+    }
+
+    @GetMapping("/ongoing-orders")
+    public ResponseEntity<List<OrderDTO>> getCurrentOrders() {
+        setUserDto();
+        List<OrderDTO> currentOrders = driverServices.getCurrentOrder(userDTO.getUserId());
         return ResponseEntity.ok(currentOrders);
     }
 
-    @PostMapping("/assign/{orderId}/{driverId}")
-    public ResponseEntity<String> assignDriverToOrder(@PathVariable Long orderId, @PathVariable Long driverId) {
-        driverServices.assignDriverToOrder(orderId, driverId);
-        return ResponseEntity.ok("Driver assigned to order successfully");
+    @PostMapping("/assign/{orderId}")
+    public ResponseEntity<String> assignDriverToOrder(@PathVariable Long orderId) {
+        setUserDto();
+        try{
+            driverServices.assignDriverToOrder(orderId, userDTO.getUserId());
+            return ResponseEntity.ok("Driver assigned to order successfully");
+        } catch (RuntimeException e) {
+            return ResponseEntity.ok(e.getMessage());
+        }
     }
 
-    @PutMapping("/orders/{orderId}/status/{status}")
+    @PutMapping("/updateOrder/{orderId}/{status}")
     public ResponseEntity<String> updateStatusForDelivery(@PathVariable Long orderId, @PathVariable Integer status) {
         driverServices.updateStatusForDelivery(orderId, status);
         return ResponseEntity.ok("Order status updated successfully");
     }
 
-    @DeleteMapping("/{userId}")
-    public ResponseEntity<String> deleteDriver(@PathVariable Long userId) {
-        driverServices.deleteDriver(userId);
+    @DeleteMapping("/deleteAcc")
+    public ResponseEntity<String> deleteDriver() {
+        setUserDto();
+        driverServices.deleteDriver(userDTO.getUserId());
         return new ResponseEntity<>("Deleted Successfully", HttpStatus.OK);
+    }
+
+    void setUserDto(){
+
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        this.userDTO = userServices.getByUserName(authentication.getName());
+
     }
 
 

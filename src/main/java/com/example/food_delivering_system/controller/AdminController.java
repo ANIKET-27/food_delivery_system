@@ -2,14 +2,17 @@ package com.example.food_delivering_system.controller;
 
 
 import com.example.food_delivering_system.dto.Request.CreateDishDTO;
-import com.example.food_delivering_system.dto.Response.DishDTO;
-import com.example.food_delivering_system.dto.Response.OrderDTO;
-import com.example.food_delivering_system.dto.Response.RoleDTO;
-import com.example.food_delivering_system.dto.Response.UserDTO;
+import com.example.food_delivering_system.dto.Request.CreateUserDTO;
+import com.example.food_delivering_system.dto.Response.*;
+import com.example.food_delivering_system.entities.RefreshToken;
 import com.example.food_delivering_system.services.impl.AdminServicesImpl;
+import com.example.food_delivering_system.services.impl.security.JwtService;
+import com.example.food_delivering_system.services.impl.security.RefreshTokenService;
+import com.example.food_delivering_system.services.impl.security.UserDetailServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -19,10 +22,16 @@ import java.util.List;
 public class AdminController {
 
     private final AdminServicesImpl adminServices;
+    private final UserDetailServiceImpl userDetailsService;
+    private final JwtService jwtService;
+    private final RefreshTokenService refreshTokenService;
 
     @Autowired
-    public AdminController(AdminServicesImpl adminServices) {
+    public AdminController(AdminServicesImpl adminServices, UserDetailServiceImpl userDetailsService, JwtService jwtService, RefreshTokenService refreshTokenService) {
         this.adminServices = adminServices;
+        this.userDetailsService = userDetailsService;
+        this.jwtService = jwtService;
+        this.refreshTokenService = refreshTokenService;
     }
 
     @GetMapping("/users")
@@ -61,11 +70,6 @@ public class AdminController {
         return ResponseEntity.noContent().build();
     }
 
-    @GetMapping("/dishes")
-    public ResponseEntity<List<DishDTO>> getAllDishes() {
-        List<DishDTO> dishes = adminServices.getAllDishes();
-        return ResponseEntity.ok(dishes);
-    }
 
     @GetMapping("/dishes/{id}")
     public ResponseEntity<DishDTO> getDishById(@PathVariable Long id) {
@@ -74,8 +78,8 @@ public class AdminController {
     }
 
     @PostMapping("/dishes")
-    public ResponseEntity<DishDTO> createDish(@RequestBody CreateDishDTO dto) {
-        DishDTO dish = adminServices.createDish(dto.getName(), dto.getDescription(), dto.getPrice());
+    public ResponseEntity<DishDTO> createDish(@RequestBody DishDTO dto) {
+        DishDTO dish = adminServices.createDish(dto);
         return new ResponseEntity<>(dish, HttpStatus.CREATED);
     }
 
@@ -127,4 +131,23 @@ public class AdminController {
         List<UserDTO> drivers = adminServices.getAllAvailableDrivers();
         return ResponseEntity.ok(drivers);
     }
+
+    @PostMapping("/admin")
+    public ResponseEntity SignUpAdmin(@RequestBody CreateUserDTO userInfoDto){
+        try{
+            Boolean isSignUped = userDetailsService.signupAdmin(userInfoDto);
+            if(Boolean.FALSE.equals(isSignUped)){
+                return new ResponseEntity<>("Already Exist", HttpStatus.BAD_REQUEST);
+            }
+            RefreshToken refreshToken = refreshTokenService.createRefreshToken(userInfoDto.getUserName());
+            String jwtToken = jwtService.GenerateToken(userInfoDto.getUserName());
+            return new ResponseEntity<>(JwtResponseDTO.builder().accessToken(jwtToken).
+                    token(refreshToken.getToken()).build(), HttpStatus.OK);
+        }
+        catch (Exception ex){
+            return new ResponseEntity<>("Exception in User Service", HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+
 }

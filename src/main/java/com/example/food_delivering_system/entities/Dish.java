@@ -20,8 +20,10 @@ public class Dish {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long dish_id;
+    private String category;
     private String name;
     private String description;
+    private String url;
     private double price;
 
 }

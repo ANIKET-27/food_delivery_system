@@ -4,6 +4,7 @@ import com.example.food_delivering_system.entities.Dish;
 import lombok.*;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Map;
 
 
@@ -31,8 +32,7 @@ public class OrderDTO {
     private String driverPhNo;
     private String customerPhNo;
 
-    private Map<Dish, Double> orderItems;
-
+    private ArrayList<OrderDishDTO> orderItems;
 
 
 }

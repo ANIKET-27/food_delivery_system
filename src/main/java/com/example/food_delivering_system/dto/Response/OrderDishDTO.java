@@ -1,6 +1,5 @@
 package com.example.food_delivering_system.dto.Response;
 
-
 import lombok.*;
 
 @Getter
@@ -9,7 +8,7 @@ import lombok.*;
 @AllArgsConstructor
 @Builder
 @ToString
-public class DishDTO {
+public class OrderDishDTO {
 
     private Long dish_id;
     private String name;
@@ -17,5 +16,6 @@ public class DishDTO {
     private Double price;
     private String category;
     private String url;
+    private double quantity;
 
 }

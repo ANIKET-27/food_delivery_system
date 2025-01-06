@@ -15,5 +15,7 @@ public class PlaceOrderDTO {
     private HashMap<Long,Double> cart;
     private String deliveryInstructions;
     private Long user_id;
+    private double latitude;
+    private double longitude;
 
 }

@@ -28,7 +28,7 @@ public interface AdminServices {
 
     DishDTO getDishById(Long id);
 
-    DishDTO createDish(String name, String des, Double price);
+    DishDTO createDish(DishDTO dishDTO);
 
     DishDTO updateDish(DishDTO dishDTO);
 

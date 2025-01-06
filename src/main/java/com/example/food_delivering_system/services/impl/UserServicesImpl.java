@@ -14,6 +14,7 @@ import com.example.food_delivering_system.repository.UserRepository;
 import com.example.food_delivering_system.services.UserServices;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.*;
@@ -87,7 +88,7 @@ public class UserServicesImpl implements UserServices {
                 .phoneNo(dto.getPhoneNo())
                 .available(false)
                 .accNo(dto.getAccNo())
-                .role(Role.builder().role_id(2).role_name("User").build())
+                .role(Role.builder().roleId(2).build())
                 .build();
 
         User save =  userRepository.save(user);
@@ -101,19 +102,18 @@ public class UserServicesImpl implements UserServices {
 
         User user = Convetor.reqToUser(userDTO);
         user.setUserId(userId);
-        user.setRole(Role.builder().role_id(2).role_name("User").build());
+        user.setRole(Role.builder().roleId(2).roleName("User").build());
         User save = userRepository.save(user);
 
         return Convetor.userToUserDto(save);
 
     }
 
+    @Transactional
     @Override
     public OrderDTO createOrder(PlaceOrderDTO placeOrderDTO) {
 
         Optional<User> optUser = userRepository.findById(placeOrderDTO.getUser_id());
-
-
 
         if(optUser.isEmpty())
             throw new RuntimeException("User not found");
@@ -124,8 +124,8 @@ public class UserServicesImpl implements UserServices {
                 .orderDate(LocalDateTime.now())
                 .user(user)
                 .orderStatus(1)
-                .latitude(user.getLatitude())
-                .longitude(user.getLongitude())
+                .latitude(placeOrderDTO.getLatitude())
+                .longitude(placeOrderDTO.getLongitude())
                 .deliveryInstructions(placeOrderDTO.getDeliveryInstructions())
                 .orderItems(new HashMap<>())
                 .build();
@@ -160,11 +160,13 @@ public class UserServicesImpl implements UserServices {
 
          order.setOrderStatus(-1);
 
+         if(order.getDriver() != null) {
 
-            // MAKE THE DRIVER AVAILABLE
-            // INITIATE THE TRANSACTIONS
+             User driver = order.getDriver();
 
-
+             driver.setAvailable(true);
+             userRepository.save(driver);
+         }
 
          Order saved = orderRepository.save(order);
 
@@ -192,5 +194,8 @@ public class UserServicesImpl implements UserServices {
 
     }
 
-
+    public UserDTO getByUserName(String name){
+       User user = userRepository.findByUserName(name);
+       return  Convetor.userToUserDto(user);
+    }
 }

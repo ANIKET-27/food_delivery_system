@@ -53,7 +53,6 @@ public class AdminServicesImpl implements AdminServices {
         for(User u : users) customers.add(Convetor.userToUserDto(u));
 
         return customers;
-
     }
 
 
@@ -107,11 +106,13 @@ public class AdminServicesImpl implements AdminServices {
     }
 
     @Override
-    public DishDTO createDish(String name , String description, Double price) {
+    public DishDTO createDish(DishDTO dishDTO) {
         Dish d = Dish.builder()
-                .name(name)
-                .description(description)
-                .price(price)
+                .name(dishDTO.getName())
+                .description(dishDTO.getDescription())
+                .price(dishDTO.getPrice())
+                .url(dishDTO.getUrl())
+                .category(dishDTO.getCategory())
                 .build();
 
 

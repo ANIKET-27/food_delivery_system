@@ -18,6 +18,8 @@ public interface DriverServices {
 
     List<OrderDTO> getPastOrder(Long id);
 
+    List<OrderDTO> getAvailableOrder();
+
     List<OrderDTO> getCurrentOrder(Long id);
 
     void assignDriverToOrder (Long orderId, Long driverId);

@@ -25,6 +25,8 @@ public interface UserServices{
 
     OrderDTO cancelOrder(Long orderId);
 
+    UserDTO getByUserName(String name);
+
     void deleteUser(Long id);
 
 

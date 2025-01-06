@@ -1,15 +1,16 @@
 package com.example.food_delivering_system.services.impl;
 
 import com.example.food_delivering_system.dto.Request.CreateUserDTO;
-import com.example.food_delivering_system.dto.Response.DishDTO;
-import com.example.food_delivering_system.dto.Response.OrderDTO;
-import com.example.food_delivering_system.dto.Response.RoleDTO;
-import com.example.food_delivering_system.dto.Response.UserDTO;
+import com.example.food_delivering_system.dto.Response.*;
 import com.example.food_delivering_system.entities.Dish;
 import com.example.food_delivering_system.entities.Order;
 import com.example.food_delivering_system.entities.Role;
 import com.example.food_delivering_system.entities.User;
 import org.modelmapper.ModelMapper;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 
 public class Convetor {
@@ -17,14 +18,14 @@ public class Convetor {
 
     static ModelMapper modelMapper = new ModelMapper();
 
-    public static User userDtoToUser(UserDTO userDTO) { return modelMapper.map(userDTO, User.class);}
+    public static User userDtoToUser(CreateUserDTO userDTO) { return modelMapper.map(userDTO, User.class);}
 
     public static  UserDTO userToUserDto(User user) {
         return modelMapper.map(user, UserDTO.class);
     }
 
 
-    public   static Order orderDtoToOrder(OrderDTO orderDTO){
+    public   static Order orderDtoToOrder(Order orderDTO){
        return modelMapper.map(orderDTO,Order.class);
     }
 
@@ -43,6 +44,16 @@ public class Convetor {
 
        }
 
+       ArrayList<OrderDishDTO> orderItems = new ArrayList<>();
+
+       for(Map.Entry<Dish,Double>  e : order.getOrderItems().entrySet()){
+            OrderDishDTO item = dishToOrderDishDto(e.getKey());
+            item.setQuantity(e.getValue());
+
+            orderItems.add(item);
+       }
+
+       orderDTO.setOrderItems(orderItems);
 
        return orderDTO;
     }
@@ -59,6 +70,14 @@ public class Convetor {
 
 
     }
+
+    public static OrderDishDTO dishToOrderDishDto (Dish dish) {
+
+        return  modelMapper.map(dish, OrderDishDTO.class);
+
+
+    }
+
 
     public static Role roleDtoToRole(RoleDTO roleDto){
 

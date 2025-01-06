@@ -9,8 +9,10 @@ import com.example.food_delivering_system.entities.User;
 import com.example.food_delivering_system.repository.OrderRepository;
 import com.example.food_delivering_system.repository.UserRepository;
 import com.example.food_delivering_system.services.DriverServices;
+import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
+import java.sql.Driver;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -39,34 +41,35 @@ public class DriverServicesImpl implements DriverServices {
                 .phoneNo(dto.getPhoneNo())
                 .accNo(dto.getAccNo())
                 .available(true)
-                .role(Role.builder().role_id(3).role_name("Driver").build())
+                .role(Role.builder().roleId(3).build())
                 .build();
 
         User save =  userRepository.save(user);
-
         return Convetor.userToUserDto(save);
+    }
 
+    @Override
+    public List<OrderDTO> getAvailableOrder() {
 
+        List<Order> orders = orderRepository.findAvailableOrder();
+        List<OrderDTO> availableOrder = new ArrayList<>();
+        for(Order o : orders) availableOrder.add(Convetor.orderToOrderDto(o));
+        return availableOrder;
     }
 
     @Override
     public UserDTO updateDriver(Long id, CreateUserDTO userDTO) {
-
         User user = Convetor.reqToUser(userDTO);
-        user.setRole(Role.builder().role_id(3).role_name("Driver").build());
+        user.setRole(Role.builder().roleId(3).build());
         user.setUserId(id);
         User save = userRepository.save(user);
-
         return Convetor.userToUserDto(save);
-
     }
 
     @Override
     public UserDTO getDriverById(Long id) {
         Optional<User> driverOpt = userRepository.findById(id);
-
         if(driverOpt.isEmpty()) throw new RuntimeException("Cannot Find The Driver");
-
         return Convetor.userToUserDto(driverOpt.get());
     }
 
@@ -110,28 +113,27 @@ public class DriverServicesImpl implements DriverServices {
 
     }
 
+    @Transactional
     @Override
     public void assignDriverToOrder(Long orderId, Long driverId) {
 
         Optional<User> driver = userRepository.findById(driverId);
         Optional<Order> order = orderRepository.findById(orderId);
 
-        if(driver.isEmpty() || order.isEmpty()) throw  new RuntimeException("Something went wrong with the assingment of driver");
+        if(driver.isEmpty() || order.isEmpty()) throw  new RuntimeException("Something went wrong with the order");
+
+        if(!driver.get().getAvailable()) throw new RuntimeException("You are already delivering an order.");
 
 
-//        if(driver.get().getAvailable()) {
-
+        if(driver.get().getAvailable()) {
             order.get().setDriver(driver.get());
             driver.get().setAvailable(false);
 
             orderRepository.save(order.get());
             userRepository.save(driver.get());
-
-//        }
-//        else
-//            throw  new RuntimeException("Order has Already been cancelled.");
-//
-
+        }
+        else
+            throw  new RuntimeException("Internal Error.");
     }
 
     @Override
@@ -143,11 +145,10 @@ public class DriverServicesImpl implements DriverServices {
 
         order.get().setOrderStatus(status);
 
-        if(status == 3){
-
-            // MAKE THE DRIVER AVAILABLE
-            // INITIATE THE TRANSACTIONS
-
+        if(status == 4){
+            User driver = order.get().getDriver();
+            driver.setAvailable(true);
+            userRepository.save(driver);
         }
 
         orderRepository.save(order.get());
